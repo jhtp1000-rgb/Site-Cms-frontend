@@ -6,6 +6,7 @@ import { ConfigProvider, theme as antdTheme } from 'antd'
 import 'antd/dist/reset.css'
 import App from './App'
 import { colors } from './theme/colors'
+import './index.css';
 
 const muiTheme = createTheme({
   palette: { 
