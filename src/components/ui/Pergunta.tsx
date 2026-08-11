@@ -1,13 +1,12 @@
-
 import { useState } from 'react';
 
 interface PerguntaProps {
   question: string;
   answer: string;
+  color?: string; // Cor dinâmica do tenant
 }
 
-export default function Pergunta({ question, answer }: PerguntaProps) {
-
+export default function Pergunta({ question, answer, color = '#00966D' }: PerguntaProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -20,9 +19,13 @@ export default function Pergunta({ question, answer }: PerguntaProps) {
           {question}
         </h3>
         
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${
-          isOpen ? 'bg-[#e8f7f2] text-[#00966D]' : 'bg-slate-100 text-slate-500'
-        }`}>
+        {/* Ícone dinâmico: Cinza quando fechado, cor do tenant quando aberto */}
+        <div 
+          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${
+            !isOpen ? 'bg-slate-100 text-slate-500' : ''
+          }`}
+          style={isOpen ? { backgroundColor: `${color}20`, color: color } : {}}
+        >
           {isOpen ? (
             <svg width="14" height="2" viewBox="0 0 14 2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 0H14V2H0V0Z" />
@@ -35,8 +38,6 @@ export default function Pergunta({ question, answer }: PerguntaProps) {
         </div>
       </div>
 
-      {/* Corpo da Resposta (Expansível) */}
-      {/* Usamos grid para animar a altura suavemente caso queira adicionar transition no futuro, mas o condicional resolve o visual */}
       {isOpen && (
         <div className="px-5 md:px-6 pb-5 md:pb-6 text-slate-500 text-sm md:text-base leading-relaxed border-t border-slate-50 pt-4">
           {answer}

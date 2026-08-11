@@ -17,7 +17,6 @@
     "@mui/material": "^9.1.2",
     "@tailwindcss/vite": "^4.3.2",
     "antd": "^6.5.0",
-    "firebase": "^12.15.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.0",
