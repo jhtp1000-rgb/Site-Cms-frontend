@@ -1,4 +1,3 @@
-// src/main.tsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { ThemeProvider, createTheme, CssBaseline, StyledEngineProvider } from '@mui/material'
@@ -12,13 +11,13 @@ const muiTheme = createTheme({
   palette: { 
     mode: 'light', 
     primary: { 
-      main: colors.secondary,      // Botões principais com cor de destaque
-      light: '#EF5350',
-      dark: '#C62828',
+      main: colors.secondary,
+      light: '#6ee7b7',
+      dark: colors.hover.secondary,
       contrastText: colors.text.onSecondary,
     },
     secondary: { 
-      main: colors.primary,        // Cor de fundo
+      main: colors.primary,
       light: '#FFFFFF',
       dark: '#E0E0E0',
       contrastText: colors.text.onPrimary,
@@ -43,7 +42,7 @@ const muiTheme = createTheme({
         contained: {
           boxShadow: 'none',
           '&:hover': {
-            boxShadow: '0 2px 8px rgba(229, 57, 53, 0.3)',
+            boxShadow: '0 2px 8px rgba(5, 150, 105, 0.3)',
           },
         },
       },
@@ -60,7 +59,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           theme={{
             algorithm: antdTheme.defaultAlgorithm,
             token: { 
-              colorPrimary: colors.secondary,        // Ant Design usa cor de destaque
+              colorPrimary: colors.secondary,
               colorLink: colors.secondary,
               colorLinkHover: colors.hover.secondary,
               borderRadius: 8,

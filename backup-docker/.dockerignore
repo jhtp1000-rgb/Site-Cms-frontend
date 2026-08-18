@@ -1,0 +1,30 @@
+# Dependências
+node_modules
+
+# Build
+dist
+dist-ssr
+
+# Versionamento
+.git
+.gitignore
+
+# Variáveis de ambiente (sensíveis)
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+
+# Docker (não precisa dentro da imagem)
+Dockerfile
+docker-compose.yml
+.dockerignore
