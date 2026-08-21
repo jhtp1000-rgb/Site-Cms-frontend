@@ -53,10 +53,10 @@ export default function Login() {
       <div className="w-full max-w-sm bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_40px_rgba(15,23,42,0.08)] border border-slate-100 p-8 relative animate-fade-in-up">
         <div className="flex items-center gap-2.5 mb-8 animate-fade-in-up delay-1">
           <div className="w-9 h-9 rounded-xl bg-[#059669] text-white font-display font-bold flex items-center justify-center text-base shadow-sm shadow-emerald-500/30">
-            A
+            CMS
           </div>
           <span className="font-display font-semibold text-slate-800 tracking-tight">
-            analima<span className="text-[#059669]">.digital</span>
+            site<span className="text-[#059669]">.cms</span>
           </span>
         </div>
 
