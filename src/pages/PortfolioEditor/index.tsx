@@ -193,8 +193,6 @@ export default function PortfolioEditor() {
         onToggleMenu={() => setIsMenuOpen((v) => !v)}
       />
 
-      {/* min-h-0 em cada nível — sem isso, o conteúdo mais fundo com
-          overflow-y-auto nunca chega a ter altura definida pra rolar. */}
       <div className="flex flex-1 min-h-0 overflow-hidden relative">
         <AsideMenuTenant
           color={tenantData.color}
@@ -254,7 +252,6 @@ export default function PortfolioEditor() {
                   layoutError={layout.error}
                   saving={layout.saving}
                   isDirty={layout.isDirty}
-                  isLocalOnly={layout.isLocalOnly}
                   setOrder={layout.setOrder}
                   toggleVisibility={layout.toggleVisibility}
                   save={layout.save}

@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
 import contatoService from '../../services/contatoService';
 import type { Contato } from '../../types/contato';
 import type { SectionEditorHandle } from '../../types/section-editor';
-import { FloatingField } from './Floatingfield';
+import { FloatingField } from './FloatingField';
 
 interface ContatosEditorProps {
   paginaId: number;

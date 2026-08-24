@@ -30,7 +30,6 @@ interface VisualPortfolioEditorProps {
   layoutError: string | null;
   saving: boolean;
   isDirty: boolean;
-  isLocalOnly: boolean;
   setOrder: (tipos: SectionType[]) => void;
   toggleVisibility: (tipo: SectionType) => void;
   save: () => Promise<void>;
@@ -55,7 +54,6 @@ export function VisualPortfolioEditor({
   layoutError,
   saving,
   isDirty,
-  isLocalOnly,
   setOrder,
   toggleVisibility,
   save,
@@ -135,10 +133,6 @@ export function VisualPortfolioEditor({
         </div>
       )}
 
-      {/* min-h-0 é essencial aqui: sem isso, um item flex por padrão não
-          encolhe abaixo da altura do próprio conteúdo, e o filho com
-          overflow-y-auto logo abaixo nunca chega a ter altura definida
-          pra rolar — tudo simplesmente vaza pra fora da tela. */}
       <div className="flex flex-1 min-h-0 overflow-hidden relative">
         <div className="flex-1 min-w-0 overflow-y-auto bg-slate-100 p-3 sm:p-6 flex flex-col items-center">
           <div

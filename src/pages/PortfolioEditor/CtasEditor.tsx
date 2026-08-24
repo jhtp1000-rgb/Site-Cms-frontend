@@ -4,7 +4,7 @@ import cardCtaService from '../../services/cardCtaService';
 import type { BotaoCta } from '../../types/botaoCta';
 import type { CardCta } from '../../types/cardCta';
 import type { SectionEditorHandle } from '../../types/section-editor';
-import { FloatingField } from './Floatingfield';
+import { FloatingField } from './FloatingField';
 
 interface CtasEditorProps {
   paginaId: number;

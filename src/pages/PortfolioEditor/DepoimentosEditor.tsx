@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
 import feedbackService from '../../services/feedbackService';
 import type { Feedback } from '../../types/feedback';
 import type { SectionEditorHandle } from '../../types/section-editor';
-import { FloatingField } from './Floatingfield';
+import { FloatingField } from './FloatingField';
 
 interface DepoimentosEditorProps {
   paginaId: number;
