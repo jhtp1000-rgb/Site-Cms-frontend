@@ -52,7 +52,7 @@ export function InspectorPanel({ tipo, paginaId, tenantId, color, onClose, onSav
         className="fixed md:static inset-y-0 right-0 z-50
           w-full md:w-[26rem] md:flex-shrink-0
           bg-white md:bg-white/95 md:backdrop-blur-xl
-          border-l border-slate-200/70 flex flex-col h-full
+          border-l border-slate-200/70 flex flex-col md:h-fit
           shadow-[-8px_0_30px_rgba(15,23,42,0.08)] md:shadow-[-8px_0_30px_rgba(15,23,42,0.04)]
           animate-fade-in-up"
       >

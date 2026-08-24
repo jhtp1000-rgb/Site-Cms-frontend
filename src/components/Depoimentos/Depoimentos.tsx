@@ -13,7 +13,7 @@ interface DepoimentosProps {
 export function Depoimentos({ feedbacks, viewport }: DepoimentosProps) {
   if (feedbacks.length === 0) return null;
 
-  const columns = resp<string>(viewport, { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' });
+  const columns = resp<string>(viewport, { xs: '1fr', sm: '1fr', md: '1fr' });
 
   return (
     <Box component="section" id="depoimentos" sx={{ width: '100%' }}>

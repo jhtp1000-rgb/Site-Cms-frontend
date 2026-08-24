@@ -135,8 +135,8 @@ export function VisualPortfolioEditor({
         </div>
       )}
 
-      <div className="flex flex-1 min-h-0 overflow-hidden relative">
-        <div className="flex-1 min-w-0 overflow-y-auto bg-slate-100 p-3 sm:p-6 flex flex-col items-center">
+      <div className="flex">
+        <div className="flex-1 min-w-0 bg-slate-100 p-3 sm:p-6 flex flex-col items-center">
           <div
             className="bg-white shadow-sm w-full"
             style={{
