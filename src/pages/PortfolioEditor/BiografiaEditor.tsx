@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
 import biografiaService from '../../services/biografiaService';
 import type { SectionEditorHandle } from '../../types/section-editor';
-import { FloatingField } from './Floatingfield';
+import { FloatingField } from './FloatingField';
 
 interface BiografiaEditorProps {
   paginaId: number;
@@ -41,7 +41,7 @@ export const BiografiaEditor = forwardRef<SectionEditorHandle, BiografiaEditorPr
             <FloatingField
               label="Sua biografia"
               value={value}
-              onChange={(v) => (v.length <= 2000 ? setValue(v) : null)}
+              onChange={(v: string) => (v.length <= 2000 ? setValue(v) : null)}
               color={color}
               multiline
               rows={5}
