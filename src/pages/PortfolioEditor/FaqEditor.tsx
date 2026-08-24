@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
 import accordionService from '../../services/accordionService';
 import type { Accordion } from '../../types/accordion';
 import type { SectionEditorHandle } from '../../types/section-editor';
-import { FloatingField } from './Floatingfield';
+import { FloatingField } from './FloatingField';
 
 interface FaqEditorProps {
   paginaId: number;
