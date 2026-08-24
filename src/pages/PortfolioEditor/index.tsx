@@ -6,6 +6,7 @@ import { CriarPaginaForm } from './CriarPaginaForm';
 import { PublicLinkBanner } from './PublicLinkBanner';
 import { VisualPortfolioEditor } from '../../components/portfolio-editor/VisualPortfolioEditor';
 import { useAuth } from '../../contexts/AuthProvider';
+import { usePageLayout } from '../../hooks/usePageLayout';
 import paginaService from '../../services/paginaService';
 import biografiaService from '../../services/biografiaService';
 import contatoService from '../../services/contatoService';
@@ -15,6 +16,7 @@ import cardCtaService from '../../services/cardCtaService';
 import feedbackService from '../../services/feedbackService';
 import carrosselService from '../../services/carrosselService';
 import type { PortfolioViewModel } from '../../types/portfolio-view-model';
+import type { SectionType } from '../../types/portfolio-layout';
 
 interface TenantData {
   color: string;
@@ -34,6 +36,7 @@ function formatarData(iso: string): string {
 
 export default function PortfolioEditor() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedSection, setSelectedSection] = useState<SectionType | null>(null);
   const { user } = useAuth();
 
   const [tenantData, setTenantData] = useState<TenantData | null>(null);
@@ -41,6 +44,8 @@ export default function PortfolioEditor() {
   const [viewModel, setViewModel] = useState<PortfolioViewModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const layout = usePageLayout(paginaId);
 
   const carregarDados = useCallback(async () => {
     if (!user?.tenantId) return;
@@ -185,10 +190,22 @@ export default function PortfolioEditor() {
         tenantName={tenantData.tenantName}
         tenantPortfolioName={tenantData.tenantPortfolioName}
         assinatura={tenantData.assinatura}
+        onToggleMenu={() => setIsMenuOpen((v) => !v)}
       />
 
-      <div className="flex flex-1 overflow-hidden relative">
-        <AsideMenuTenant color={tenantData.color} isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      {/* min-h-0 em cada nível — sem isso, o conteúdo mais fundo com
+          overflow-y-auto nunca chega a ter altura definida pra rolar. */}
+      <div className="flex flex-1 min-h-0 overflow-hidden relative">
+        <AsideMenuTenant
+          color={tenantData.color}
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          secoes={paginaId ? layout.secoes : undefined}
+          viewModel={viewModel ?? undefined}
+          selectedSection={selectedSection}
+          onSelectSection={setSelectedSection}
+          onToggleVisibilidade={layout.toggleVisibility}
+        />
 
         {!paginaId ? (
           <main className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
@@ -213,18 +230,37 @@ export default function PortfolioEditor() {
             </div>
           </main>
         ) : (
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="px-4 md:px-8 pt-4">
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div className="px-4 md:px-8 pt-4 flex-shrink-0">
+              <GeneralInfoTenant
+                color={tenantData.color}
+                activeSections={tenantData.stats.activeSections}
+                totalSections={tenantData.stats.totalSections}
+                lastEdit={tenantData.stats.lastEdit}
+                views={tenantData.stats.views}
+              />
               <PublicLinkBanner paginaId={paginaId} color={tenantData.color} />
             </div>
 
             {viewModel && (
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-hidden">
                 <VisualPortfolioEditor
                   paginaId={paginaId}
                   viewModel={viewModel}
                   color={tenantData.color}
                   onContentSaved={carregarDados}
+                  secoes={layout.secoes}
+                  loadingLayout={layout.loading}
+                  layoutError={layout.error}
+                  saving={layout.saving}
+                  isDirty={layout.isDirty}
+                  isLocalOnly={layout.isLocalOnly}
+                  setOrder={layout.setOrder}
+                  toggleVisibility={layout.toggleVisibility}
+                  save={layout.save}
+                  discard={layout.discard}
+                  selectedSection={selectedSection}
+                  onSelectSection={setSelectedSection}
                 />
               </div>
             )}

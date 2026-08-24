@@ -14,19 +14,29 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { EditorToolbar, type Viewport } from './EditorToolbar';
-import { SectionsPanel } from './SectionsPanel';
 import { InspectorPanel } from './InspectorPanel';
 import { SortableSectionFrame } from './SortableSectionFrame';
 import { PortfolioRenderer } from '../portfolio/PortfolioRenderer';
-import { usePageLayout } from '../../hooks/usePageLayout';
 import type { PortfolioViewModel } from '../../types/portfolio-view-model';
-import type { SectionType } from '../../types/portfolio-layout';
+import type { PageLayoutSection, SectionType } from '../../types/portfolio-layout';
 
 interface VisualPortfolioEditorProps {
   paginaId: number;
   viewModel: PortfolioViewModel;
   color: string;
   onContentSaved: () => void;
+  secoes: PageLayoutSection[];
+  loadingLayout: boolean;
+  layoutError: string | null;
+  saving: boolean;
+  isDirty: boolean;
+  isLocalOnly: boolean;
+  setOrder: (tipos: SectionType[]) => void;
+  toggleVisibility: (tipo: SectionType) => void;
+  save: () => Promise<void>;
+  discard: () => void;
+  selectedSection: SectionType | null;
+  onSelectSection: (tipo: SectionType | null) => void;
 }
 
 const VIEWPORT_WIDTH: Record<Viewport, number | string> = {
@@ -40,24 +50,21 @@ export function VisualPortfolioEditor({
   viewModel,
   color,
   onContentSaved,
+  secoes,
+  loadingLayout,
+  layoutError,
+  saving,
+  isDirty,
+  isLocalOnly,
+  setOrder,
+  toggleVisibility,
+  save,
+  discard,
+  selectedSection,
+  onSelectSection,
 }: VisualPortfolioEditorProps) {
-  const {
-    secoes,
-    loading: loadingLayout,
-    error: layoutError,
-    saving,
-    isDirty,
-    setOrder,
-    toggleVisibility,
-    save,
-    discard,
-    isLocalOnly,
-  } = usePageLayout(paginaId);
-
-  const [selectedSection, setSelectedSection] = useState<SectionType | null>(null);
   const [viewport, setViewport] = useState<Viewport>('desktop');
   const [previewMode, setPreviewMode] = useState(false);
-  const [sectionsOpen, setSectionsOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -93,7 +100,7 @@ export function VisualPortfolioEditor({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-h-0">
       {!previewMode && (
         <EditorToolbar
           color={color}
@@ -106,7 +113,6 @@ export function VisualPortfolioEditor({
           onTogglePreview={() => setPreviewMode(true)}
           onSave={save}
           onDiscard={discard}
-          onOpenSections={() => setSectionsOpen(true)}
         />
       )}
 
@@ -123,27 +129,17 @@ export function VisualPortfolioEditor({
         </div>
       )}
 
-
       {layoutError && (
         <div className="bg-red-50 text-red-600 text-xs px-4 py-2 border-b border-red-100">
           {layoutError}
         </div>
       )}
 
-      <div className="flex flex-1 overflow-hidden relative">
-        {!previewMode && (
-          <SectionsPanel
-            secoes={secoes}
-            viewModel={viewModel}
-            color={color}
-            selectedSection={selectedSection}
-            onSelect={setSelectedSection}
-            onToggleVisibilidade={toggleVisibility}
-            isOpen={sectionsOpen}
-            onClose={() => setSectionsOpen(false)}
-          />
-        )}
-
+      {/* min-h-0 é essencial aqui: sem isso, um item flex por padrão não
+          encolhe abaixo da altura do próprio conteúdo, e o filho com
+          overflow-y-auto logo abaixo nunca chega a ter altura definida
+          pra rolar — tudo simplesmente vaza pra fora da tela. */}
+      <div className="flex flex-1 min-h-0 overflow-hidden relative">
         <div className="flex-1 min-w-0 overflow-y-auto bg-slate-100 p-3 sm:p-6 flex flex-col items-center">
           <div
             className="bg-white shadow-sm w-full"
@@ -153,7 +149,7 @@ export function VisualPortfolioEditor({
             }}
           >
             {previewMode ? (
-              <PortfolioRenderer viewModel={viewModel} layout={secoes} mode="public" />
+              <PortfolioRenderer viewModel={viewModel} layout={secoes} mode="public" viewport={viewport} />
             ) : (
               <DndContext
                 key={viewport}
@@ -170,6 +166,7 @@ export function VisualPortfolioEditor({
                     layout={secoes}
                     mode="editor"
                     selectedSection={selectedSection}
+                    viewport={viewport}
                     renderEditorSlot={(slot) => (
                       <SortableSectionFrame
                         tipo={slot.tipo}
@@ -177,7 +174,7 @@ export function VisualPortfolioEditor({
                         visivel={slot.visivel}
                         selecionada={slot.selecionada}
                         color={color}
-                        onSelect={setSelectedSection}
+                        onSelect={onSelectSection}
                         onToggleVisibilidade={toggleVisibility}
                       >
                         {slot.children}
@@ -195,7 +192,7 @@ export function VisualPortfolioEditor({
             tipo={selectedSection}
             paginaId={paginaId}
             color={color}
-            onClose={() => setSelectedSection(null)}
+            onClose={() => onSelectSection(null)}
             onSaved={onContentSaved}
           />
         )}

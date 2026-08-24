@@ -1,3 +1,4 @@
+// src/components/Dashboard/Dashboard.tsx
 import { Box, Avatar, Typography, Button, Stack, Paper } from '@mui/material';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
@@ -7,6 +8,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import { colors, shadows, CONTAINER_MAX_WIDTH } from '../../theme/colors';
 import type { ContatoItem, BotaoCtaItem } from '../../types/portfolio-view-model';
 import { iniciais, resolveContato, type ContatoKind } from '../../utils/portfolioHelpers';
+import { resp, type SimViewport } from '../../utils/responsive';
 
 interface DashboardProps {
   nome: string;
@@ -14,6 +16,7 @@ interface DashboardProps {
   bio?: string | null;
   contatos: ContatoItem[];
   botoesCta: BotaoCtaItem[];
+  viewport?: SimViewport;
 }
 
 const ICONS: Record<ContatoKind, React.ReactNode> = {
@@ -24,12 +27,24 @@ const ICONS: Record<ContatoKind, React.ReactNode> = {
   other: <LinkIcon />,
 };
 
-export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta }: DashboardProps) {
+export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta, viewport }: DashboardProps) {
   const acoes = [
     ...contatos.map((c) => ({ tipo: 'contato' as const, item: c })),
     ...botoesCta.map((b) => ({ tipo: 'botao' as const, item: b })),
   ];
   const temAcoes = acoes.length > 0;
+
+  // Resolvidos manualmente quando há um viewport simulado (modo editor) —
+  // sem isso, o MUI reagiria à largura real do navegador, não à largura
+  // simulada do canvas, e o card de ações ficaria sobreposto ao Hero.
+  const colDirection = resp<'column' | 'row'>(viewport, { xs: 'column', md: 'row' });
+  const heroAlign = resp<'center' | 'flex-start'>(viewport, { xs: 'center', sm: 'flex-start' });
+  const heroTextAlign = resp<'center' | 'left'>(viewport, { xs: 'center', sm: 'left' });
+  const avatarSize = resp<number>(viewport, { xs: 100, md: 132 });
+  const nameSize = resp<number>(viewport, { xs: 30, md: 38 });
+  const bodyFontSize = resp<number>(viewport, { xs: 15, md: 16 });
+  const paperWidth = resp<string | number>(viewport, { xs: '100%', md: 340 });
+  const paperPosition = colDirection === 'row' ? 'sticky' : 'static';
 
   return (
     <Box component="section" sx={{ bgcolor: '#fff', px: 3, py: { xs: 6, md: 10 } }}>
@@ -37,7 +52,7 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta }: Dashboa
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
+            flexDirection: colDirection,
             gap: { xs: 5, md: 6 },
             alignItems: 'flex-start',
           }}
@@ -46,21 +61,21 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta }: Dashboa
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                alignItems: { xs: 'center', sm: 'flex-start' },
+                flexDirection: resp<'column' | 'row'>(viewport, { xs: 'column', sm: 'row' }),
+                alignItems: heroAlign,
                 gap: 3,
                 mb: 3.5,
-                textAlign: { xs: 'center', sm: 'left' },
+                textAlign: heroTextAlign,
               }}
             >
               <Box sx={{ position: 'relative', flexShrink: 0 }}>
                 <Avatar
                   sx={{
-                    width: { xs: 100, md: 132 },
-                    height: { xs: 100, md: 132 },
+                    width: avatarSize,
+                    height: avatarSize,
                     border: `3px solid ${colors.accent.ring}`,
                     bgcolor: colors.secondary,
-                    fontSize: { xs: 34, md: 44 },
+                    fontSize: resp<number>(viewport, { xs: 34, md: 44 }),
                     fontWeight: 700,
                   }}
                 >
@@ -80,12 +95,12 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta }: Dashboa
                 />
               </Box>
 
-              <Box sx={{ pt: { sm: 0.5 } }}>
+              <Box sx={{ pt: colDirection === 'row' ? 0 : undefined }}>
                 <Typography
                   sx={{
                     fontWeight: 700,
                     color: colors.text.primary,
-                    fontSize: { xs: 30, md: 38 },
+                    fontSize: nameSize,
                     lineHeight: 1.15,
                     letterSpacing: '-0.01em',
                   }}
@@ -94,7 +109,7 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta }: Dashboa
                 </Typography>
                 {subtitulo && (
                   <Typography
-                    sx={{ color: colors.secondary, fontWeight: 600, fontSize: { xs: 15, md: 17 }, mt: 0.5 }}
+                    sx={{ color: colors.secondary, fontWeight: 600, fontSize: resp<number>(viewport, { xs: 15, md: 17 }), mt: 0.5 }}
                   >
                     {subtitulo}
                   </Typography>
@@ -106,10 +121,10 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta }: Dashboa
               <Typography
                 sx={{
                   color: colors.text.secondary,
-                  fontSize: { xs: 15, md: 16 },
+                  fontSize: bodyFontSize,
                   lineHeight: 1.75,
                   maxWidth: 620,
-                  mx: { xs: 'auto', sm: 0 },
+                  mx: heroTextAlign === 'center' ? 'auto' : 0,
                   whiteSpace: 'pre-wrap',
                   overflowWrap: 'anywhere',
                 }}
@@ -123,12 +138,14 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta }: Dashboa
             <Paper
               elevation={0}
               sx={{
-                width: { xs: '100%', md: 340 },
+                width: paperWidth,
                 flexShrink: 0,
                 p: 3.5,
                 borderRadius: '16px',
                 border: `1px solid ${colors.border}`,
                 boxShadow: shadows.card,
+                position: paperPosition,
+                top: paperPosition === 'sticky' ? 88 : undefined,
               }}
             >
               <Typography

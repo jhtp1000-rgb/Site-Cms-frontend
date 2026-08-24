@@ -1,7 +1,9 @@
+// src/components/portfolio/PortfolioRenderer.tsx
 import { Box } from '@mui/material';
 import { PublicHeader } from '../Header/PublicHeader';
 import { PortfolioSectionRenderer, sectionHasData } from './PortfolioSectionRenderer';
 import { colors, CONTAINER_MAX_WIDTH } from '../../theme/colors';
+import { resp, type SimViewport } from '../../utils/responsive';
 import type { PortfolioViewModel } from '../../types/portfolio-view-model';
 import type { PageLayoutSection, SectionType } from '../../types/portfolio-layout';
 
@@ -21,6 +23,10 @@ interface PortfolioRendererProps {
   mode: PortfolioRenderMode;
   renderEditorSlot?: (props: EditorSectionSlotProps) => React.ReactNode;
   selectedSection?: SectionType | null;
+  // Só definido no modo editor — simula um breakpoint específico,
+  // ignorando a largura real do navegador. undefined = comportamento
+  // normal do MUI (usado na vitrine pública de verdade).
+  viewport?: SimViewport;
 }
 
 const PAIR_GROUPS: { left: SectionType; right: SectionType; background: 'white' | 'grey' }[] = [
@@ -91,12 +97,13 @@ export function PortfolioRenderer({
   mode,
   renderEditorSlot,
   selectedSection = null,
+  viewport,
 }: PortfolioRendererProps) {
   const secoesOrdenadas = [...layout].sort((a, b) => a.ordem - b.ordem);
   const grupos = buildRenderGroups(secoesOrdenadas, mode, viewModel);
 
   const renderSlot = (secao: PageLayoutSection) => {
-    const conteudo = <PortfolioSectionRenderer tipo={secao.tipo} viewModel={viewModel} />;
+    const conteudo = <PortfolioSectionRenderer tipo={secao.tipo} viewModel={viewModel} viewport={viewport} />;
     if (mode === 'public' || !renderEditorSlot) return conteudo;
     return renderEditorSlot({
       tipo: secao.tipo,
@@ -118,6 +125,7 @@ export function PortfolioRenderer({
         temFaq={viewModel.faqs.length > 0}
         temContato={viewModel.contatos.length > 0}
         sticky={mode === 'public'}
+        viewport={viewport}
       />
 
       {grupos.map((grupo) => {
@@ -138,6 +146,8 @@ export function PortfolioRenderer({
         }
 
         const key = `${grupo.left.tipo}-${grupo.right.tipo}`;
+        const flexDirection = resp<'column' | 'row'>(viewport, { xs: 'column', md: 'row' });
+
         return (
           <Box
             key={key}
@@ -150,13 +160,17 @@ export function PortfolioRenderer({
                 mx: 'auto',
                 width: '100%',
                 display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
+                flexDirection,
                 gap: { xs: 5, md: 5 },
                 alignItems: 'flex-start',
               }}
             >
-              <Box sx={{ flex: { md: '1 1 60%' }, minWidth: 0, width: '100%' }}>{renderSlot(grupo.left)}</Box>
-              <Box sx={{ flex: { md: '1 1 40%' }, minWidth: 0, width: '100%' }}>{renderSlot(grupo.right)}</Box>
+              <Box sx={{ flex: flexDirection === 'row' ? '1 1 60%' : '1 1 auto', minWidth: 0, width: '100%' }}>
+                {renderSlot(grupo.left)}
+              </Box>
+              <Box sx={{ flex: flexDirection === 'row' ? '1 1 40%' : '1 1 auto', minWidth: 0, width: '100%' }}>
+                {renderSlot(grupo.right)}
+              </Box>
             </Box>
           </Box>
         );

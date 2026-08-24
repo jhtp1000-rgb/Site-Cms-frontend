@@ -1,8 +1,10 @@
+// src/components/Header/PublicHeader.tsx
 import { Box, Typography, Button } from '@mui/material';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { colors, CONTAINER_MAX_WIDTH } from '../../theme/colors';
 import type { ContatoItem, BotaoCtaItem } from '../../types/portfolio-view-model';
 import { iniciais, resolveContato } from '../../utils/portfolioHelpers';
+import { resp, type SimViewport } from '../../utils/responsive';
 
 interface PublicHeaderProps {
   nome: string;
@@ -13,6 +15,7 @@ interface PublicHeaderProps {
   temFaq: boolean;
   temContato: boolean;
   sticky?: boolean;
+  viewport?: SimViewport;
 }
 
 function scrollTo(id: string) {
@@ -28,6 +31,7 @@ export function PublicHeader({
   temFaq,
   temContato,
   sticky = true,
+  viewport,
 }: PublicHeaderProps) {
   const navItems = [
     temPortfolio && { label: 'Portfólio', id: 'portfolio' },
@@ -42,6 +46,8 @@ export function PublicHeader({
     : botoesCta[0]
       ? { texto: botoesCta[0].textoExibicao, href: botoesCta[0].linkDestino }
       : null;
+
+  const mostrarNav = resp<'none' | 'flex'>(viewport, { xs: 'none', md: 'flex' }) !== 'none';
 
   return (
     <Box
@@ -90,8 +96,8 @@ export function PublicHeader({
           </Typography>
         </Box>
 
-        {navItems.length > 0 && (
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 4 }}>
+        {navItems.length > 0 && mostrarNav && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             {navItems.map((item) => (
               <Typography
                 key={item.id}

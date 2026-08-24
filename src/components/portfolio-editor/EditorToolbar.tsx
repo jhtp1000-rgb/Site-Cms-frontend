@@ -13,7 +13,6 @@ interface EditorToolbarProps {
   onTogglePreview: () => void;
   onSave: () => void;
   onDiscard: () => void;
-  onOpenSections: () => void;
 }
 
 const VIEWPORTS: { key: Viewport; label: string }[] = [
@@ -33,23 +32,10 @@ export function EditorToolbar({
   onTogglePreview,
   onSave,
   onDiscard,
-  onOpenSections,
 }: EditorToolbarProps) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 bg-white/80 backdrop-blur-xl border-b border-slate-200/70 px-4 py-3">
       <div className="flex items-center gap-2.5">
-        <button
-          onClick={onOpenSections}
-          className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition-colors duration-150"
-          aria-label="Abrir seções"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-
         <Link
           to="/dashboard"
           className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors duration-150"

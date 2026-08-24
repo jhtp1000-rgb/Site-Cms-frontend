@@ -1,10 +1,20 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { SECTION_LABELS, type PageLayoutSection, type SectionType } from '../../types/portfolio-layout';
+import type { PortfolioViewModel } from '../../types/portfolio-view-model';
+import { sectionHasData } from '../portfolio/PortfolioSectionRenderer';
 
 interface AsideMenuTenantProps {
   color: string;
   isOpen: boolean;
   onClose: () => void;
+  // Opcionais — só existem quando já há uma página criada, com layout
+  // carregado. Sem eles, "Painel de Edição" fica sem o acordeão.
+  secoes?: PageLayoutSection[];
+  viewModel?: PortfolioViewModel;
+  selectedSection?: SectionType | null;
+  onSelectSection?: (tipo: SectionType) => void;
+  onToggleVisibilidade?: (tipo: SectionType) => void;
 }
 
 const dashboardIcon = (
@@ -23,18 +33,50 @@ const assinaturaIcon = (
   </svg>
 );
 
-export default function AsideMenuTenant({ color, isOpen, onClose }: AsideMenuTenantProps) {
-  const [activeItem, setActiveItem] = useState('dashboard');
+const chevronIcon = (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="18 15 12 9 6 15" />
+  </svg>
+);
 
-  const handleItemClick = (id: string) => {
-    setActiveItem(id);
-    if (window.innerWidth < 768) {
-      onClose();
+export default function AsideMenuTenant({
+  color,
+  isOpen,
+  onClose,
+  secoes,
+  viewModel,
+  selectedSection,
+  onSelectSection,
+  onToggleVisibilidade,
+}: AsideMenuTenantProps) {
+  const [activeItem, setActiveItem] = useState('dashboard');
+  const [secoesExpanded, setSecoesExpanded] = useState(true);
+
+  const temSecoes = Boolean(secoes && secoes.length > 0 && viewModel);
+
+  const fecharNoMobile = () => {
+    if (window.innerWidth < 768) onClose();
+  };
+
+  const handleDashboardClick = () => {
+    setActiveItem('dashboard');
+    if (temSecoes) {
+      setSecoesExpanded((v) => !v);
+    } else {
+      fecharNoMobile();
     }
   };
 
+  const handleSelectSecao = (tipo: SectionType, visivel: boolean) => {
+    // Selecionar uma seção oculta já a reativa — evita um segundo passo
+    // separado só pra "mostrar" antes de poder editar/pré-visualizar.
+    if (!visivel) onToggleVisibilidade?.(tipo);
+    onSelectSection?.(tipo);
+    fecharNoMobile();
+  };
+
   const itemClass = (id: string) =>
-    `group flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 outline-none ${
+    `group flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 outline-none w-full ${
       activeItem === id
         ? 'text-slate-900'
         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
@@ -57,9 +99,9 @@ export default function AsideMenuTenant({ color, isOpen, onClose }: AsideMenuTen
         <nav className="flex-1 overflow-y-auto p-3.5">
           <ul className="flex flex-col gap-1">
             <li>
-              <a
-                href="#dashboard"
-                onClick={() => handleItemClick('dashboard')}
+              <button
+                type="button"
+                onClick={handleDashboardClick}
                 className={itemClass('dashboard')}
                 style={activeItem === 'dashboard' ? { backgroundColor: `${color}12` } : undefined}
               >
@@ -72,14 +114,69 @@ export default function AsideMenuTenant({ color, isOpen, onClose }: AsideMenuTen
                 >
                   {dashboardIcon}
                 </span>
-                <span>Painel de Edição</span>
-              </a>
+                <span className="flex-1 text-left">Painel de Edição</span>
+                {temSecoes && (
+                  <span
+                    className="flex-shrink-0 text-slate-400 transition-transform duration-200"
+                    style={{ transform: secoesExpanded ? 'rotate(0deg)' : 'rotate(180deg)' }}
+                  >
+                    {chevronIcon}
+                  </span>
+                )}
+              </button>
+
+              {temSecoes && secoesExpanded && (
+                <ul className="mt-1.5 ml-3.5 pl-3.5 border-l border-slate-200 flex flex-col gap-0.5 animate-fade-in">
+                  {[...secoes!]
+                    .sort((a, b) => a.ordem - b.ordem)
+                    .map((secao) => {
+                      const temDado = sectionHasData(secao.tipo, viewModel!);
+                      const isSelected = selectedSection === secao.tipo;
+
+                      let statusLabel = 'Visível';
+                      let statusColor = color;
+                      if (!secao.visivel) {
+                        statusLabel = 'Oculta';
+                        statusColor = '#94a3b8';
+                      } else if (!temDado) {
+                        statusLabel = 'Vazia';
+                        statusColor = '#d97706';
+                      }
+
+                      return (
+                        <li key={secao.tipo}>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSecao(secao.tipo, secao.visivel)}
+                            className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-left text-[13px] transition-colors duration-150"
+                            style={
+                              isSelected
+                                ? { backgroundColor: `${color}12`, color, fontWeight: 600 }
+                                : { color: '#64748b' }
+                            }
+                          >
+                            <span className="truncate">{SECTION_LABELS[secao.tipo]}</span>
+                            <span
+                              className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md flex-shrink-0 tracking-wide"
+                              style={{ backgroundColor: `${statusColor}15`, color: statusColor }}
+                            >
+                              {statusLabel}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                </ul>
+              )}
             </li>
 
             <li>
               <Link
                 to="/admin/assinatura"
-                onClick={() => handleItemClick('assinatura')}
+                onClick={() => {
+                  setActiveItem('assinatura');
+                  fecharNoMobile();
+                }}
                 className={itemClass('assinatura')}
                 style={activeItem === 'assinatura' ? { backgroundColor: `${color}12` } : undefined}
               >

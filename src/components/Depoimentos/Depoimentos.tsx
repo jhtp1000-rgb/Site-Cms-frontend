@@ -1,14 +1,19 @@
+// src/components/Depoimentos/Depoimentos.tsx
 import { Box, Typography } from '@mui/material';
 import { colors } from '../../theme/colors';
 import type { FeedbackItem } from '../../types/portfolio-view-model';
+import { resp, type SimViewport } from '../../utils/responsive';
 import { Comentario } from './Comentario';
 
 interface DepoimentosProps {
   feedbacks: FeedbackItem[];
+  viewport?: SimViewport;
 }
 
-export function Depoimentos({ feedbacks }: DepoimentosProps) {
+export function Depoimentos({ feedbacks, viewport }: DepoimentosProps) {
   if (feedbacks.length === 0) return null;
+
+  const columns = resp<string>(viewport, { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' });
 
   return (
     <Box component="section" id="depoimentos" sx={{ width: '100%' }}>
@@ -23,7 +28,7 @@ export function Depoimentos({ feedbacks }: DepoimentosProps) {
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: columns, gap: 2.5 }}>
         {feedbacks.map((feedback) => (
           <Comentario key={feedback.id} feedback={feedback} />
         ))}

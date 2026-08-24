@@ -1,14 +1,23 @@
+// src/components/AreaPortfolios/AreaPortfolios.tsx
 import { Box, Typography } from '@mui/material';
 import { colors, CONTAINER_MAX_WIDTH } from '../../theme/colors';
 import type { ImagemItem } from '../../types/portfolio-view-model';
+import { resp, type SimViewport } from '../../utils/responsive';
 import { Card } from './Card';
 
 interface AreaPortfoliosProps {
   imagens: ImagemItem[];
+  viewport?: SimViewport;
 }
 
-export function AreaPortfolios({ imagens }: AreaPortfoliosProps) {
+export function AreaPortfolios({ imagens, viewport }: AreaPortfoliosProps) {
   if (imagens.length === 0) return null;
+
+  const columns = resp<string>(viewport, {
+    xs: '1fr',
+    sm: 'repeat(2, 1fr)',
+    md: 'repeat(4, 1fr)',
+  });
 
   return (
     <Box
@@ -40,11 +49,7 @@ export function AreaPortfolios({ imagens }: AreaPortfoliosProps) {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(4, 1fr)',
-            },
+            gridTemplateColumns: columns,
             gap: { xs: 2.5, md: 3 },
           }}
         >

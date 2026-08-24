@@ -1,14 +1,19 @@
+// src/components/Ctas/CardsCtaSection.tsx
 import { Box, Typography } from '@mui/material';
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 import { colors, shadows } from '../../theme/colors';
 import type { CardCtaItem } from '../../types/portfolio-view-model';
+import { resp, type SimViewport } from '../../utils/responsive';
 
 interface CardsCtaSectionProps {
   cards: CardCtaItem[];
+  viewport?: SimViewport;
 }
 
-export function CardsCtaSection({ cards }: CardsCtaSectionProps) {
+export function CardsCtaSection({ cards, viewport }: CardsCtaSectionProps) {
   if (cards.length === 0) return null;
+
+  const columns = resp<string>(viewport, { xs: '1fr', sm: 'repeat(2, 1fr)' });
 
   return (
     <Box component="section" sx={{ width: '100%' }}>
@@ -23,7 +28,7 @@ export function CardsCtaSection({ cards }: CardsCtaSectionProps) {
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: columns, gap: 2.5 }}>
         {cards.map((card) => (
           <Box
             key={card.id}

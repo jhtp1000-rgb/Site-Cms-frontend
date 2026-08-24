@@ -1,3 +1,4 @@
+// src/components/portfolio/PortfolioSectionRenderer.tsx
 import { Dashboard } from '../Dashboard/Dashboard';
 import { AreaPortfolios } from '../AreaPortfolios/AreaPortfolios';
 import { CardsCtaSection } from '../Ctas/CardsCtaSection';
@@ -6,13 +7,15 @@ import { FaqSection } from '../Faq/FaqSection';
 import { ContatoSection } from '../Contato/ContatoSection';
 import type { PortfolioViewModel } from '../../types/portfolio-view-model';
 import type { SectionType } from '../../types/portfolio-layout';
+import type { SimViewport } from '../../utils/responsive';
 
 interface PortfolioSectionRendererProps {
   tipo: SectionType;
   viewModel: PortfolioViewModel;
+  viewport?: SimViewport;
 }
 
-export function PortfolioSectionRenderer({ tipo, viewModel }: PortfolioSectionRendererProps) {
+export function PortfolioSectionRenderer({ tipo, viewModel, viewport }: PortfolioSectionRendererProps) {
   switch (tipo) {
     case 'HERO':
       return (
@@ -22,14 +25,15 @@ export function PortfolioSectionRenderer({ tipo, viewModel }: PortfolioSectionRe
           bio={viewModel.bio}
           contatos={viewModel.contatos}
           botoesCta={viewModel.botoesCta}
+          viewport={viewport}
         />
       );
     case 'PORTFOLIO':
-      return <AreaPortfolios imagens={viewModel.imagensCarrossel} />;
+      return <AreaPortfolios imagens={viewModel.imagensCarrossel} viewport={viewport} />;
     case 'CARDS_CTA':
-      return <CardsCtaSection cards={viewModel.cardsCta} />;
+      return <CardsCtaSection cards={viewModel.cardsCta} viewport={viewport} />;
     case 'DEPOIMENTOS':
-      return <Depoimentos feedbacks={viewModel.feedbacks} />;
+      return <Depoimentos feedbacks={viewModel.feedbacks} viewport={viewport} />;
     case 'FAQ':
       return <FaqSection faqs={viewModel.faqs} />;
     case 'CONTATO':
