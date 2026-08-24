@@ -23,9 +23,6 @@ interface PortfolioRendererProps {
   mode: PortfolioRenderMode;
   renderEditorSlot?: (props: EditorSectionSlotProps) => React.ReactNode;
   selectedSection?: SectionType | null;
-  // Só definido no modo editor — simula um breakpoint específico,
-  // ignorando a largura real do navegador. undefined = comportamento
-  // normal do MUI (usado na vitrine pública de verdade).
   viewport?: SimViewport;
 }
 
@@ -146,7 +143,14 @@ export function PortfolioRenderer({
         }
 
         const key = `${grupo.left.tipo}-${grupo.right.tipo}`;
+        // Antes: `flex` de cada lado dependia de comparar
+        // `flexDirection === 'row'` — quebrava na vitrine pública pelo
+        // mesmo motivo dos outros dois arquivos. Agora cada lado resolve
+        // sua proporção direto via resp(), usando os MESMOS breakpoints
+        // do flexDirection (xs/md) pra ficarem sempre em sincronia.
         const flexDirection = resp<'column' | 'row'>(viewport, { xs: 'column', md: 'row' });
+        const leftFlex = resp<string>(viewport, { xs: '1 1 auto', md: '1 1 60%' });
+        const rightFlex = resp<string>(viewport, { xs: '1 1 auto', md: '1 1 40%' });
 
         return (
           <Box
@@ -165,12 +169,8 @@ export function PortfolioRenderer({
                 alignItems: 'flex-start',
               }}
             >
-              <Box sx={{ flex: flexDirection === 'row' ? '1 1 60%' : '1 1 auto', minWidth: 0, width: '100%' }}>
-                {renderSlot(grupo.left)}
-              </Box>
-              <Box sx={{ flex: flexDirection === 'row' ? '1 1 40%' : '1 1 auto', minWidth: 0, width: '100%' }}>
-                {renderSlot(grupo.right)}
-              </Box>
+              <Box sx={{ flex: leftFlex, minWidth: 0, width: '100%' }}>{renderSlot(grupo.left)}</Box>
+              <Box sx={{ flex: rightFlex, minWidth: 0, width: '100%' }}>{renderSlot(grupo.right)}</Box>
             </Box>
           </Box>
         );
