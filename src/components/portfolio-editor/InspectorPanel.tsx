@@ -52,11 +52,11 @@ export function InspectorPanel({ tipo, paginaId, tenantId, color, onClose, onSav
         className="fixed md:static inset-y-0 right-0 z-50
           w-full md:w-[26rem] md:flex-shrink-0
           bg-white md:bg-white/95 md:backdrop-blur-xl
-          border-l border-slate-200/70 flex flex-col md:h-fit
+          border-l border-slate-200/70 flex flex-col h-full
           shadow-[-8px_0_30px_rgba(15,23,42,0.08)] md:shadow-[-8px_0_30px_rgba(15,23,42,0.04)]
           animate-fade-in-up"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 flex-shrink-0">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Editando</p>
             <h3 className="font-display font-semibold text-slate-900 text-[17px] tracking-tight">
@@ -75,7 +75,7 @@ export function InspectorPanel({ tipo, paginaId, tenantId, color, onClose, onSav
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {tipo === 'HERO' && <BiografiaEditor ref={ref} paginaId={paginaId} tenantId={tenantId} color={color} />}
           {tipo === 'PORTFOLIO' && <CarrosselEditor ref={ref} paginaId={paginaId} color={color} />}
           {tipo === 'CARDS_CTA' && <CtasEditor ref={ref} paginaId={paginaId} color={color} />}
@@ -85,14 +85,14 @@ export function InspectorPanel({ tipo, paginaId, tenantId, color, onClose, onSav
         </div>
 
         {erro && (
-          <div className="px-5 py-3">
+          <div className="px-5 py-3 flex-shrink-0">
             <p className="text-sm text-red-600 bg-red-50 border border-red-100 px-3.5 py-2.5 rounded-xl animate-scale-in">
               {erro}
             </p>
           </div>
         )}
 
-        <div className="px-5 py-4 border-t border-slate-100">
+        <div className="px-5 py-4 border-t border-slate-100 flex-shrink-0">
           <button
             onClick={handleClose}
             disabled={saving}

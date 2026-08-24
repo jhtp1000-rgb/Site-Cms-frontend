@@ -94,9 +94,6 @@ export default function PortfolioEditor() {
     const listaAccordions = accordions.data ?? [];
     const listaFeedbacks = feedbacks.data ?? [];
     const imagensCarrossel = (carrosseis.data ?? []).flatMap((c) => c.imagens ?? []);
-    // Nome exibido na vitrine vem do Tenant (editável no Hero) — não mais
-    // do usuário logado, que é uma identidade separada (quem acessa o
-    // painel, não necessariamente o "dono" do portfólio sendo editado).
     const nomeExibicao = tenantInfo.data?.nome ?? user.nome;
 
     const sections = [
@@ -234,7 +231,10 @@ export default function PortfolioEditor() {
             </div>
           </main>
         ) : (
-          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          // SCROLL #1 (fora): este container é a "página inteira" — rola
+          // se GeneralInfoTenant + banner + o bloco do editor, juntos,
+          // não couberem na tela (janela muito curta, por exemplo).
+          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
             <div className="px-4 md:px-8 pt-4 flex-shrink-0">
               <GeneralInfoTenant
                 color={tenantData.color}
@@ -247,7 +247,11 @@ export default function PortfolioEditor() {
             </div>
 
             {viewModel && user?.tenantId && (
-              <div className="flex-1 min-h-0 overflow-hidden">
+              // min-h garante espaço vertical de verdade pro bloco do
+              // editor — sem isso, ele encolhia até caber no conteúdo, e
+              // o scroll interno do canvas/coluna de edição nunca tinha
+              // altura suficiente pra ativar.
+              <div className="flex-1 min-h-[70vh]">
                 <VisualPortfolioEditor
                   paginaId={paginaId}
                   tenantId={user.tenantId}

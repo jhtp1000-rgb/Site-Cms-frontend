@@ -102,22 +102,24 @@ export function VisualPortfolioEditor({
   return (
     <div className="flex flex-col h-full min-h-0">
       {!previewMode && (
-        <EditorToolbar
-          color={color}
-          isDirty={isDirty}
-          saving={saving}
-          previewMode={previewMode}
-          viewport={viewport}
-          publicUrl={publicUrl}
-          onChangeViewport={setViewport}
-          onTogglePreview={() => setPreviewMode(true)}
-          onSave={save}
-          onDiscard={discard}
-        />
+        <div className="sticky top-0 z-20 flex-shrink-0">
+          <EditorToolbar
+            color={color}
+            isDirty={isDirty}
+            saving={saving}
+            previewMode={previewMode}
+            viewport={viewport}
+            publicUrl={publicUrl}
+            onChangeViewport={setViewport}
+            onTogglePreview={() => setPreviewMode(true)}
+            onSave={save}
+            onDiscard={discard}
+          />
+        </div>
       )}
 
       {previewMode && (
-        <div className="flex items-center justify-between bg-white border-b border-slate-200 px-4 py-3">
+        <div className="flex items-center justify-between bg-white border-b border-slate-200 px-4 py-3 flex-shrink-0">
           <span className="text-sm text-slate-500">Modo pré-visualização</span>
           <button
             onClick={() => setPreviewMode(false)}
@@ -130,13 +132,17 @@ export function VisualPortfolioEditor({
       )}
 
       {layoutError && (
-        <div className="bg-red-50 text-red-600 text-xs px-4 py-2 border-b border-red-100">
+        <div className="bg-red-50 text-red-600 text-xs px-4 py-2 border-b border-red-100 flex-shrink-0">
           {layoutError}
         </div>
       )}
 
-      <div className="flex">
-        <div className="flex-1 min-w-0 bg-slate-100 p-3 sm:p-6 flex flex-col items-center">
+      {/* Esta fileira agora tem altura de verdade (herdada do min-h-[70vh]
+          do pai) — é isso que faz SCROLL #2 (canvas) e SCROLL #3 (coluna
+          de edição) funcionarem cada um por conta própria, em vez de só
+          o scroll de fora dominar tudo. */}
+      <div className="flex flex-1 min-h-0">
+        <div className="flex-1 min-w-0 overflow-y-auto bg-slate-100 p-3 sm:p-6 flex flex-col items-center">
           <div
             className="bg-white shadow-sm w-full"
             style={{
