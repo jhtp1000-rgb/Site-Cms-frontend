@@ -47,7 +47,12 @@ export function PublicHeader({
       ? { texto: botoesCta[0].textoExibicao, href: botoesCta[0].linkDestino }
       : null;
 
-  const mostrarNav = resp<'none' | 'flex'>(viewport, { xs: 'none', md: 'flex' }) !== 'none';
+  // Antes: um booleano derivado de comparar o retorno do resp() com uma
+  // string ("!== 'none'") — quebrava na vitrine pública de verdade, onde
+  // resp() devolve o OBJETO de breakpoints (não uma string), e objeto
+  // nunca é === a string, então o nav nunca escondia. Agora o valor de
+  // display vai direto pro sx, sem passar por nenhuma comparação no meio.
+  const navDisplay = resp<'none' | 'flex'>(viewport, { xs: 'none', md: 'flex' });
 
   return (
     <Box
@@ -96,8 +101,8 @@ export function PublicHeader({
           </Typography>
         </Box>
 
-        {navItems.length > 0 && mostrarNav && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {navItems.length > 0 && (
+          <Box sx={{ display: navDisplay, alignItems: 'center', gap: 4 }}>
             {navItems.map((item) => (
               <Typography
                 key={item.id}

@@ -22,6 +22,7 @@ import type { PageLayoutSection, SectionType } from '../../types/portfolio-layou
 
 interface VisualPortfolioEditorProps {
   paginaId: number;
+  tenantId: number;
   viewModel: PortfolioViewModel;
   color: string;
   onContentSaved: () => void;
@@ -46,6 +47,7 @@ const VIEWPORT_WIDTH: Record<Viewport, number | string> = {
 
 export function VisualPortfolioEditor({
   paginaId,
+  tenantId,
   viewModel,
   color,
   onContentSaved,
@@ -185,6 +187,7 @@ export function VisualPortfolioEditor({
           <InspectorPanel
             tipo={selectedSection}
             paginaId={paginaId}
+            tenantId={tenantId}
             color={color}
             onClose={() => onSelectSection(null)}
             onSaved={onContentSaved}

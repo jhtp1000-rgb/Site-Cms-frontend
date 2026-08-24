@@ -34,9 +34,6 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta, viewport 
   ];
   const temAcoes = acoes.length > 0;
 
-  // Resolvidos manualmente quando há um viewport simulado (modo editor) —
-  // sem isso, o MUI reagiria à largura real do navegador, não à largura
-  // simulada do canvas, e o card de ações ficaria sobreposto ao Hero.
   const colDirection = resp<'column' | 'row'>(viewport, { xs: 'column', md: 'row' });
   const heroAlign = resp<'center' | 'flex-start'>(viewport, { xs: 'center', sm: 'flex-start' });
   const heroTextAlign = resp<'center' | 'left'>(viewport, { xs: 'center', sm: 'left' });
@@ -44,7 +41,15 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta, viewport 
   const nameSize = resp<number>(viewport, { xs: 30, md: 38 });
   const bodyFontSize = resp<number>(viewport, { xs: 15, md: 16 });
   const paperWidth = resp<string | number>(viewport, { xs: '100%', md: 340 });
-  const paperPosition = colDirection === 'row' ? 'sticky' : 'static';
+
+  // Antes: derivados comparando colDirection === 'row' (quebra na vitrine
+  // pública, onde colDirection pode ser o objeto de breakpoints, nunca
+  // estritamente igual à string 'row'). Agora cada um resolve seu próprio
+  // valor final direto via resp(), sem depender de comparar outro resp().
+  const paperPosition = resp<'sticky' | 'static'>(viewport, { xs: 'static', md: 'sticky' });
+  const paperTop = resp<number | undefined>(viewport, { xs: undefined, md: 88 });
+  const heroPt = resp<number | undefined>(viewport, { xs: undefined, md: 0 });
+  const bioMx = resp<string | number>(viewport, { xs: 'auto', sm: 0 });
 
   return (
     <Box component="section" sx={{ bgcolor: '#fff', px: 3, py: { xs: 6, md: 10 } }}>
@@ -95,7 +100,7 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta, viewport 
                 />
               </Box>
 
-              <Box sx={{ pt: colDirection === 'row' ? 0 : undefined }}>
+              <Box sx={{ pt: heroPt }}>
                 <Typography
                   sx={{
                     fontWeight: 700,
@@ -124,7 +129,7 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta, viewport 
                   fontSize: bodyFontSize,
                   lineHeight: 1.75,
                   maxWidth: 620,
-                  mx: heroTextAlign === 'center' ? 'auto' : 0,
+                  mx: bioMx,
                   whiteSpace: 'pre-wrap',
                   overflowWrap: 'anywhere',
                 }}
@@ -145,7 +150,7 @@ export function Dashboard({ nome, subtitulo, bio, contatos, botoesCta, viewport 
                 border: `1px solid ${colors.border}`,
                 boxShadow: shadows.card,
                 position: paperPosition,
-                top: paperPosition === 'sticky' ? 88 : undefined,
+                top: paperTop,
               }}
             >
               <Typography

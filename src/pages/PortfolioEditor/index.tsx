@@ -15,6 +15,7 @@ import botaoCtaService from '../../services/botaoCtaService';
 import cardCtaService from '../../services/cardCtaService';
 import feedbackService from '../../services/feedbackService';
 import carrosselService from '../../services/carrosselService';
+import tenantService from '../../services/tenantService';
 import type { PortfolioViewModel } from '../../types/portfolio-view-model';
 import type { SectionType } from '../../types/portfolio-layout';
 
@@ -76,7 +77,7 @@ export default function PortfolioEditor() {
     const pagina = resPaginas.data[0];
     setPaginaId(pagina.id);
 
-    const [biografia, contatos, accordions, botoesCta, cardsCta, feedbacks, carrosseis] = await Promise.all([
+    const [biografia, contatos, accordions, botoesCta, cardsCta, feedbacks, carrosseis, tenantInfo] = await Promise.all([
       biografiaService.getByPagina(pagina.id),
       contatoService.getByPagina(pagina.id),
       accordionService.getByPagina(pagina.id),
@@ -84,6 +85,7 @@ export default function PortfolioEditor() {
       cardCtaService.getByPagina(pagina.id),
       feedbackService.getByPagina(pagina.id),
       carrosselService.getByPagina(pagina.id),
+      tenantService.getById(user.tenantId),
     ]);
 
     const listaContatos = contatos.data ?? [];
@@ -92,6 +94,10 @@ export default function PortfolioEditor() {
     const listaAccordions = accordions.data ?? [];
     const listaFeedbacks = feedbacks.data ?? [];
     const imagensCarrossel = (carrosseis.data ?? []).flatMap((c) => c.imagens ?? []);
+    // Nome exibido na vitrine vem do Tenant (editável no Hero) — não mais
+    // do usuário logado, que é uma identidade separada (quem acessa o
+    // painel, não necessariamente o "dono" do portfólio sendo editado).
+    const nomeExibicao = tenantInfo.data?.nome ?? user.nome;
 
     const sections = [
       {
@@ -150,7 +156,7 @@ export default function PortfolioEditor() {
     setViewModel({
       paginaId: pagina.id,
       tituloPagina: pagina.tituloPagina,
-      nomeTenant: user.nome,
+      nomeTenant: nomeExibicao,
       bio: biografia.data?.conteudoTexto ?? null,
       contatos: listaContatos,
       botoesCta: listaBotoesCta,
@@ -228,7 +234,7 @@ export default function PortfolioEditor() {
             </div>
           </main>
         ) : (
-          <div className="flex-1 min-h-0 flex overflow-y-auto flex-col">
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             <div className="px-4 md:px-8 pt-4 flex-shrink-0">
               <GeneralInfoTenant
                 color={tenantData.color}
@@ -240,10 +246,11 @@ export default function PortfolioEditor() {
               <PublicLinkBanner paginaId={paginaId} color={tenantData.color} />
             </div>
 
-            {viewModel && (
-              <div className="flex-1 min-h-0">
+            {viewModel && user?.tenantId && (
+              <div className="flex-1 min-h-0 overflow-hidden">
                 <VisualPortfolioEditor
                   paginaId={paginaId}
+                  tenantId={user.tenantId}
                   viewModel={viewModel}
                   color={tenantData.color}
                   onContentSaved={carregarDados}

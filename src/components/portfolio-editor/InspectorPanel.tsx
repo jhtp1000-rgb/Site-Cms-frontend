@@ -11,12 +11,13 @@ import type { SectionEditorHandle } from '../../types/section-editor';
 interface InspectorPanelProps {
   tipo: SectionType;
   paginaId: number;
+  tenantId: number;
   color: string;
   onClose: () => void;
   onSaved: () => void;
 }
 
-export function InspectorPanel({ tipo, paginaId, color, onClose, onSaved }: InspectorPanelProps) {
+export function InspectorPanel({ tipo, paginaId, tenantId, color, onClose, onSaved }: InspectorPanelProps) {
   const ref = useRef<SectionEditorHandle>(null);
   const [saving, setSaving] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -75,7 +76,7 @@ export function InspectorPanel({ tipo, paginaId, color, onClose, onSaved }: Insp
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {tipo === 'HERO' && <BiografiaEditor ref={ref} paginaId={paginaId} color={color} />}
+          {tipo === 'HERO' && <BiografiaEditor ref={ref} paginaId={paginaId} tenantId={tenantId} color={color} />}
           {tipo === 'PORTFOLIO' && <CarrosselEditor ref={ref} paginaId={paginaId} color={color} />}
           {tipo === 'CARDS_CTA' && <CtasEditor ref={ref} paginaId={paginaId} color={color} />}
           {tipo === 'DEPOIMENTOS' && <DepoimentosEditor ref={ref} paginaId={paginaId} color={color} />}
