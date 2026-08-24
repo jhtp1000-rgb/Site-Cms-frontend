@@ -228,7 +228,7 @@ export default function PortfolioEditor() {
             </div>
           </main>
         ) : (
-          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          <div className="flex-1 min-h-0 flex overflow-y-auto flex-col">
             <div className="px-4 md:px-8 pt-4 flex-shrink-0">
               <GeneralInfoTenant
                 color={tenantData.color}
@@ -241,7 +241,7 @@ export default function PortfolioEditor() {
             </div>
 
             {viewModel && (
-              <div className="flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 min-h-0">
                 <VisualPortfolioEditor
                   paginaId={paginaId}
                   viewModel={viewModel}
